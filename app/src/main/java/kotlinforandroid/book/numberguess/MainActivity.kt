@@ -1,17 +1,23 @@
 package kotlinforandroid.book.numberguess
 
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.util.AttributeSet
+import android.widget.ScrollView
+import android.widget.TextView
 import android.os.Bundle
 import com.example.android.R
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.* // user interface-related classes from layout file
 import android.util.Log
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
-    var started = false
+    var started = false // Kotlin automatically infers the type
     var number = 0
     var tries = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) { // Gets called when the user interface is created
+        // The Bundle param might or might not contain saved data from a restart of the UI
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -20,12 +26,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle?) {  // Gets called when the activity is suspended temporarily
+        // Whe use this fn to save the state of the activity
         super.onSaveInstanceState(outState)
         putInstanceData(outState)
     }
 
-    fun start(v: View) {
+    fun start(v: View) { // You can find this in the layout and get invoked when user clicks a btn
         log("Game started")
         num.setText("")
         started = true
@@ -54,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //////////////////////
+    ////////////////////// To separate public from private fns
 
     private fun putInstanceData(outState: Bundle?) {
         if (outState != null) with(outState) {
@@ -82,9 +89,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun log(msg:String) {
         Log.d("LOG", msg)
-        console.log(msg)
+        print(msg)
+    }
+}
+
+class Console(ctx:Context, aset:AttributeSet? = null) // Custom view object, can be placed in any layout
+    : ScrollView(ctx, aset) {
+    var tv = TextView(ctx)
+    var text:String
+        get() =  tv.text.toString()
+        set(value) { tv.setText(value) }
+    init {
+        setBackgroundColor(0x40FFFF00)
+        addView(tv)
     }
 
-
-
+    fun log(msg:String) {
+        val l = tv.text.let {
+            if(it == "") listOf() else it.split("\n")
+        }.takeLast(100) + msg
+        tv.text = l.joinToString("\n")
+        post(object : Runnable {
+            override fun run() {
+                fullScroll(ScrollView.FOCUS_DOWN)
+            }
+        })
+    }
 }
