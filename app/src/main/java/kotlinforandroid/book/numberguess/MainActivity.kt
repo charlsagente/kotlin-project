@@ -10,6 +10,8 @@ import com.example.android.R
 import kotlinx.android.synthetic.main.activity_main.* // user interface-related classes from layout file
 import android.util.Log
 import android.view.View
+import kotlinforandroid.book.numberguess.Constants
+
 
 class MainActivity : AppCompatActivity() {
     var started = false // Kotlin automatically infers the type
@@ -37,8 +39,9 @@ class MainActivity : AppCompatActivity() {
         num.setText("")
         started = true
         doGuess.setEnabled(true)
-        status.text = getString(R.string.guess_hint, 1, 7)
-        number = 1 + Math.floor(Math.random()*7).toInt()
+        status.text = getString(R.string.guess_hint, Constants.LOWER_BOUND, Constants.UPPER_BOUND)
+        val span = Constants.UPPER_BOUND - Constants.LOWER_BOUND + 1
+        number = Constants.LOWER_BOUND + Math.floor(Math.random()*span).toInt()
         tries = 0
     }
 
